@@ -5,7 +5,7 @@ import com.sandrocorrea.java_framework_api.repository.LoginRepository;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Optional;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,45 +21,69 @@ public class HomeController {
   }
 
   @GetMapping("/")
-  public String index(Model model, @AuthenticationPrincipal OAuth2User user) {
-    if (user != null) {
-      model.addAttribute("name", user.getAttribute("name"));
+  public String index(Model model, OAuth2AuthenticationToken authentication) {
+    if (authentication != null) {
+      // Get the OAuth2 user
+      OAuth2User user = authentication.getPrincipal();
+      // Identify the provider
+      String registrationId = authentication.getAuthorizedClientRegistrationId();
 
-      // Extract email and other user attributes
-      String email = user.getAttribute("email");
-      String name = user.getAttribute("name");
-      String givenName = user.getAttribute("given_name");
-      String familyName = user.getAttribute("family_name");
-      String picture = user.getAttribute("picture");
-      Boolean emailVerified = user.getAttribute("email_verified");
+      // Extract common attributes
+      String email = null;
+      String name = null;
+      String givenName = null;
+      String familyName = null;
+      String picture = null;
+      Boolean emailVerified = null;
+
+      if ("google".equals(registrationId)) {
+        // Handle Google login (OIDC attributes)
+        email = user.getAttribute("email");
+        name = user.getAttribute("name");
+        givenName = user.getAttribute("given_name");
+        familyName = user.getAttribute("family_name");
+        picture = user.getAttribute("picture");
+        emailVerified = user.getAttribute("email_verified");
+      } else if ("github".equals(registrationId)) {
+        // Handle GitHub login (GitHub attributes)
+        email = user.getAttribute("email");
+        name = user.getAttribute("login");
+        picture = user.getAttribute("avatar_url");
+        emailVerified = true;
+      }
+
+      // Display name on the page
+      model.addAttribute("name", name);
 
       // Current date and time for last login
       Date currentDate = new Date();
       LocalTime currentTime = LocalTime.now();
 
-      // Check if user already exists in the database
-      Optional<Login> existingUser = loginRepository.findById(email);
+      // Check if the user already exists in the database
+      if (email != null) {
+        Optional<Login> existingUser = loginRepository.findById(email);
 
-      if (existingUser.isPresent()) {
-        // User exists, update last login time
-        Login login = existingUser.get();
-        login.setLastLogin(currentDate);
-        login.setLastLoginTime(currentTime);
-        loginRepository.save(login);
-      } else {
-        // User doesn't exist, create new entry
-        Login newUser = new Login();
-        newUser.setEmail(email);
-        newUser.setName(name);
-        newUser.setGivenName(givenName);
-        newUser.setFamilyName(familyName);
-        newUser.setPicture(picture);
-        newUser.setEmailVerified(emailVerified);
-        newUser.setLastLogin(currentDate);
-        newUser.setLastLoginTime(currentTime);
+        if (existingUser.isPresent()) {
+          // User exists, update last login time
+          Login login = existingUser.get();
+          login.setLastLogin(currentDate);
+          login.setLastLoginTime(currentTime);
+          loginRepository.save(login);
+        } else {
+          // User doesn't exist, create a new entry
+          Login newUser = new Login();
+          newUser.setEmail(email);
+          newUser.setName(name);
+          newUser.setGivenName(givenName);
+          newUser.setFamilyName(familyName);
+          newUser.setPicture(picture);
+          newUser.setEmailVerified(emailVerified);
+          newUser.setLastLogin(currentDate);
+          newUser.setLastLoginTime(currentTime);
 
-        // Save the new user to the database
-        loginRepository.save(newUser);
+          // Save the new user to the database
+          loginRepository.save(newUser);
+        }
       }
     }
     return "index"; // Render the index.html template
