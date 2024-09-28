@@ -50,6 +50,14 @@ public class HomeController {
         name = user.getAttribute("login");
         picture = user.getAttribute("avatar_url");
         emailVerified = true;
+      } else if ("linkedin".equals(registrationId)) {
+        // Handle Linkedin login (Linkedin attributes)
+        email = user.getAttribute("email");
+        name = user.getAttribute("name");
+        givenName = user.getAttribute("given_name");
+        familyName = user.getAttribute("family_name");
+        picture = user.getAttribute("picture");
+        emailVerified = user.getAttribute("email_verified");
       }
 
       // Display name on the page
