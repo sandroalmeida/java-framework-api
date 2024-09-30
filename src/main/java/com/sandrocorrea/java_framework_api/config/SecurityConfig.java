@@ -16,30 +16,28 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
-                    (requests) ->
-                            requests
-                                    .requestMatchers("/login", "/oauth2/**")
-                                    .permitAll()
-                                    .anyRequest()
-                                    .authenticated())
-            .oauth2Login(
-                    oauth2Login ->
-                            oauth2Login
-                                    .loginPage("/login")
-                                    .defaultSuccessUrl("/", true)
-                                    .userInfoEndpoint(
-                                            userInfo -> {
-                                              // Handle OpenID Connect (Google and LinkedIn)
-                                              userInfo.oidcUserService(this.oidcUserService());
-                                              // Handle OAuth2 (GitHub)
-                                              userInfo.userService(this.oAuth2UserService());
-                                            }))
-            .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
+            (requests) ->
+                requests
+                    .requestMatchers("/login", "/oauth2/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .oauth2Login(
+            oauth2Login ->
+                oauth2Login
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/", true)
+                    .userInfoEndpoint(
+                        userInfo -> {
+                          userInfo.oidcUserService(this.oidcUserService()); // For Google (OIDC)
+                          userInfo.userService(this.oAuth2UserService()); // For GitHub (OAuth2)
+                        }))
+        .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
 
     return http.build();
   }
 
-  // Google and LinkedIn OIDC user processing
+  // Google OIDC user processing
   @Bean
   public OidcUserService oidcUserService() {
     return new OidcUserService();
@@ -48,6 +46,6 @@ public class SecurityConfig {
   // GitHub OAuth2 user processing
   @Bean
   public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
-    return new CustomOAuth2UserService();  // Assuming CustomOAuth2UserService handles GitHub users
+    return new CustomOAuth2UserService();
   }
 }
