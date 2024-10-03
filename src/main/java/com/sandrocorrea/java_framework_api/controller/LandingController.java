@@ -7,17 +7,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HomeController {
+public class LandingController {
     private final LoginService loginService;
 
-    public HomeController(LoginService loginService) {
+    public LandingController(LoginService loginService) {
         this.loginService = loginService;
     }
 
     @GetMapping("/")
-    public String index(Model model, OAuth2AuthenticationToken authentication) {
+    public String showLandingPage() {
+        return "landing";
+    }
+
+    @GetMapping("/login-modal")
+    public String showLoginModal(Model model, OAuth2AuthenticationToken authentication) {
         // Delegate login processing to the service
         loginService.processLogin(authentication, model);
-        return "index"; // Render the index.html template
+        return "login-modal";
     }
 }

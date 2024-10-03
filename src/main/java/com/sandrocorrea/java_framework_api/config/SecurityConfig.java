@@ -2,6 +2,7 @@ package com.sandrocorrea.java_framework_api.config;
 
 import com.sandrocorrea.java_framework_api.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -10,29 +11,30 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
-            (requests) ->
-                requests
-                    .requestMatchers("/login", "/oauth2/**")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
-        .oauth2Login(
-            oauth2Login ->
-                oauth2Login
-                    .loginPage("/login")
-                    .defaultSuccessUrl("/", true)
-                    .userInfoEndpoint(
-                        userInfo -> {
-                          userInfo.oidcUserService(this.oidcUserService()); // For Google (OIDC)
-                          userInfo.userService(this.oAuth2UserService()); // For GitHub (OAuth2)
-                        }))
-        .logout(logout -> logout.logoutSuccessUrl("/login").permitAll());
+                    (requests) ->
+                            requests
+                                    .requestMatchers("/", "/landing", "/oauth2/**")
+                                    .permitAll()
+                                    .anyRequest()
+                                    .authenticated())
+            .oauth2Login(
+                    oauth2Login ->
+                            oauth2Login
+                                    .loginPage("/landing") // Landing page as login page
+                                    .defaultSuccessUrl("/", true) // Redirect to root after login
+                                    .userInfoEndpoint(
+                                            userInfo -> {
+                                              userInfo.oidcUserService(this.oidcUserService()); // For Google (OIDC)
+                                              userInfo.userService(this.oAuth2UserService()); // For GitHub (OAuth2)
+                                            }))
+            .logout(logout -> logout.logoutSuccessUrl("/landing").permitAll()); // Redirect to landing page after logout
 
     return http.build();
   }
