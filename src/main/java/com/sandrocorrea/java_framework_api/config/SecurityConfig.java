@@ -17,24 +17,32 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests(
-                    (requests) ->
-                            requests
-                                    .requestMatchers("/", "/landing", "/oauth2/**")
-                                    .permitAll()
-                                    .anyRequest()
-                                    .authenticated())
-            .oauth2Login(
-                    oauth2Login ->
-                            oauth2Login
-                                    .loginPage("/landing") // Landing page as login page
-                                    .defaultSuccessUrl("/", true) // Redirect to root after login
-                                    .userInfoEndpoint(
-                                            userInfo -> {
-                                              userInfo.oidcUserService(this.oidcUserService()); // For Google (OIDC)
-                                              userInfo.userService(this.oAuth2UserService()); // For GitHub (OAuth2)
-                                            }))
-            .logout(logout -> logout.logoutSuccessUrl("/landing").permitAll()); // Redirect to landing page after logout
+    http
+            .authorizeHttpRequests((requests) ->
+                    requests
+                            .requestMatchers(
+                                    "/landing",
+                                    "/login-modal",
+                                    "/oauth2/**",
+                                    "/favicon.ico",
+                                    "/css/**",
+                                    "/js/**",
+                                    "/images/**"
+                            ).permitAll()
+                            .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2Login ->
+                    oauth2Login
+                            .loginPage("/landing")
+                            .defaultSuccessUrl("/", true)
+                            .userInfoEndpoint(userInfo -> {
+                              userInfo.oidcUserService(this.oidcUserService());
+                              userInfo.userService(this.oAuth2UserService());
+                            })
+            )
+            .logout(logout ->
+                    logout.logoutSuccessUrl("/landing").permitAll()
+            );
 
     return http.build();
   }
