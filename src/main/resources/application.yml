@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: java-framework-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/model
+    username: root
+    password: AlAcT@1306
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 531110226904-id7spjd06062bfipfnkjedd4lc1dsaj2.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
+            client-name: Google
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+
+          github:
+            client-id: Iv23li9HMejSstw6Lr0x
+            client-secret: 037d635dfb671114b9f79145e4257a765d8e7f4f
+            scope: user:email
+            client-name: GitHub
+            redirect-uri: http://localhost:8080/login/oauth2/code/{registrationId}
+
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
