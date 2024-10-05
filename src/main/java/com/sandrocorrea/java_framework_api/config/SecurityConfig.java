@@ -24,7 +24,7 @@ public class SecurityConfig {
                                     "/landing",
                                     "/login-modal",
                                     "/oauth2/**",
-                                    "/favicon.ico",
+                                    "/static/favicon.ico",
                                     "/css/**",
                                     "/js/**",
                                     "/images/**"
