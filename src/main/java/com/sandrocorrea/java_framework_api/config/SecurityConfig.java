@@ -17,32 +17,31 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-            .authorizeHttpRequests((requests) ->
-                    requests
-                            .requestMatchers(
-                                    "/landing",
-                                    "/login-modal",
-                                    "/oauth2/**",
-                                    "/static/favicon.ico",
-                                    "/css/**",
-                                    "/js/**",
-                                    "/images/**"
-                            ).permitAll()
-                            .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2Login ->
-                    oauth2Login
-                            .loginPage("/landing")
-                            .defaultSuccessUrl("/", true)
-                            .userInfoEndpoint(userInfo -> {
-                              userInfo.oidcUserService(this.oidcUserService());
-                              userInfo.userService(this.oAuth2UserService());
-                            })
-            )
-            .logout(logout ->
-                    logout.logoutSuccessUrl("/landing").permitAll()
-            );
+    http.authorizeHttpRequests(
+            (requests) ->
+                requests
+                    .requestMatchers(
+                        "/landing",
+                        "/login-modal",
+                        "/oauth2/**",
+                        "/static/favicon.ico",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .oauth2Login(
+            oauth2Login ->
+                oauth2Login
+                    .loginPage("/landing")
+                    .defaultSuccessUrl("/", true)
+                    .userInfoEndpoint(
+                        userInfo -> {
+                          userInfo.oidcUserService(this.oidcUserService());
+                          userInfo.userService(this.oAuth2UserService());
+                        }))
+        .logout(logout -> logout.logoutSuccessUrl("/landing").permitAll());
 
     return http.build();
   }
