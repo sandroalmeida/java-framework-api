@@ -23,6 +23,8 @@ public class LandingController {
       OAuth2User user = authentication.getPrincipal();
       String name = user.getAttribute("name");
       model.addAttribute("name", name);
+      // Login Service for updating DB
+      loginService.processLogin(authentication, model);
     }
     return "index";
   }
@@ -34,8 +36,6 @@ public class LandingController {
 
   @GetMapping("/login-modal")
   public String showLoginModal(Model model, OAuth2AuthenticationToken authentication) {
-    // Delegate login processing to the service
-    loginService.processLogin(authentication, model);
     return "login-modal";
   }
 }
