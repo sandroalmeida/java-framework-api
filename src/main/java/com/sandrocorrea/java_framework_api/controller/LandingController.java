@@ -23,6 +23,8 @@ public class LandingController {
       OAuth2User user = authentication.getPrincipal();
       String name = user.getAttribute("name");
       model.addAttribute("name", name);
+      String picture = user.getAttribute("picture");
+      model.addAttribute("picture", picture);
       // Login Service for updating DB
       loginService.processLogin(authentication, model);
     }
