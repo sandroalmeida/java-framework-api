@@ -1,5 +1,6 @@
 package com.sandrocorrea.java_framework_api.controller;
 
+import com.sandrocorrea.java_framework_api.model.Login;
 import com.sandrocorrea.java_framework_api.service.LoginService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -21,12 +22,13 @@ public class LandingController {
     if (authentication != null) {
       // You can add user details to the model if needed
       OAuth2User user = authentication.getPrincipal();
-      String name = user.getAttribute("name");
-      model.addAttribute("name", name);
-      String picture = user.getAttribute("picture");
-      model.addAttribute("picture", picture);
       // Login Service for updating DB
       loginService.processLogin(authentication, model);
+      // Retrieving upadate Login
+      Login login = loginService.getLogin(user.getAttribute("email"));
+      // Setting model
+      model.addAttribute("name", login.getName());
+      model.addAttribute("picture", login.getPicture());
     }
     return "index";
   }

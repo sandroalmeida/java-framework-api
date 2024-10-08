@@ -37,4 +37,7 @@ public class Login {
   @Column private Date lastLogin;
 
   @Column private LocalTime lastLoginTime;
+
+  @Column(length = 50)
+  private String registrationId;
 }

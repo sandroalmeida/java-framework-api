@@ -64,6 +64,7 @@ public class LoginService {
           Login login = existingUser.get();
           login.setLastLogin(currentDate);
           login.setLastLoginTime(currentTime);
+          login.setRegistrationId(registrationId);
           loginRepository.save(login);
         } else {
           // User doesn't exist, create a new entry
@@ -76,11 +77,15 @@ public class LoginService {
           newUser.setEmailVerified(emailVerified);
           newUser.setLastLogin(currentDate);
           newUser.setLastLoginTime(currentTime);
-
+          newUser.setRegistrationId(registrationId);
           // Save the new user to the database
           loginRepository.save(newUser);
         }
       }
     }
+  }
+
+  public Login getLogin(String email) {
+    return loginRepository.findByEmail(email);
   }
 }
