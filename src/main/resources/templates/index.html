@@ -7,6 +7,10 @@
     <title>Main Page</title>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Flatpickr CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
@@ -38,6 +42,7 @@
     <h1 class="text-3xl font-semibold text-gray-800">Welcome, <span th:text="${name}"></span>!</h1>
 </div>
 
+<!-- Initialization scripts for HTMX swapped content -->
 <script>
     // Highlight the selected menu option
     document.querySelectorAll('.menu-option').forEach(button => {
@@ -45,6 +50,19 @@
             document.querySelectorAll('.menu-option').forEach(btn => btn.classList.remove('text-blue-500', 'font-bold'));
             this.classList.add('text-blue-500', 'font-bold');
         });
+    });
+
+    // Reinitialize Flatpickr and Inputmask after HTMX content swap
+    document.body.addEventListener('htmx:afterSwap', (event) => {
+        if (event.detail.target.id === 'content') {
+            // Reinitialize Flatpickr for date input
+            flatpickr("#date", {
+                dateFormat: "m/d/Y",
+                allowInput: false,  // Prevent manual input
+                altInput: true,
+                altFormat: "F j, Y"
+            });
+        }
     });
 </script>
 
