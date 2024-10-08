@@ -24,11 +24,12 @@ public class LandingController {
       OAuth2User user = authentication.getPrincipal();
       // Login Service for updating DB
       loginService.processLogin(authentication, model);
-      // Retrieving upadate Login
+      // Retrieving update Login
       Login login = loginService.getLogin(user.getAttribute("email"));
       // Setting model
       model.addAttribute("name", login.getName());
       model.addAttribute("picture", login.getPicture());
+      model.addAttribute("email", login.getEmail());
     }
     return "index";
   }
