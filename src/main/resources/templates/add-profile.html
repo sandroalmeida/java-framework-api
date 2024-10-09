@@ -1,8 +1,10 @@
-<div class="container mx-auto py-8 px-4" xmlns:th="http://www.w3.org/1999/xhtml">
-    <div class="max-w-2xl mx-auto"> <!-- This div centers the form and limits its width -->
+<div data-page="add-profile" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="max-w-2xl mx-auto">
         <div class="bg-white p-8 rounded-lg shadow-md w-full">
             <h2 class="text-2xl font-bold mb-6 text-center">Profile Registration</h2>
-            <form id="profile-form" th:object="${profile}" hx-post="/save-profile" hx-target="#message"
+
+            <form id="profile-form" th:object="${profile}" hx-post="/save-profile" hx-target="#content"
+                  hx-swap="innerHTML"
                   class="space-y-4">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 

@@ -18,10 +18,12 @@
 <!-- Top Menu -->
 <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
     <div class="flex space-x-4">
-        <button hx-get="/add-profile" hx-target="#content" class="menu-option text-gray-600 hover:text-blue-500">
+        <button hx-get="/add-profile" hx-target="#content" hx-swap="innerHTML"
+                class="menu-option text-gray-600 hover:text-blue-500" data-page="add-profile">
             Add Profile
         </button>
-        <button hx-get="/view-profiles" hx-target="#content" class="menu-option text-gray-600 hover:text-blue-500">
+        <button hx-get="/view-profiles" hx-target="#content" hx-swap="innerHTML"
+                class="menu-option text-gray-600 hover:text-blue-500" data-page="view-profiles">
             View Profiles
         </button>
     </div>
@@ -52,16 +54,30 @@
         });
     });
 
-    // Reinitialize Flatpickr and Inputmask after HTMX content swap
+    // Reinitialize Flatpickr and update menu highlighting after HTMX content swap
     document.body.addEventListener('htmx:afterSwap', (event) => {
         if (event.detail.target.id === 'content') {
-            // Reinitialize Flatpickr for date input
-            flatpickr("#date", {
-                dateFormat: "m/d/Y",
-                allowInput: false,  // Prevent manual input
-                altInput: true,
-                altFormat: "F j, Y"
-            });
+            // Reinitialize Flatpickr for date input, if the date input exists
+            if (document.querySelector("#date")) {
+                flatpickr("#date", {
+                    dateFormat: "m/d/Y",
+                    allowInput: false,  // Prevent manual input
+                    altInput: true,
+                    altFormat: "F j, Y"
+                });
+            }
+
+            // Update menu highlighting based on the content loaded
+            const page = event.detail.target.querySelector('[data-page]');
+            if (page) {
+                const pageName = page.getAttribute('data-page');
+                document.querySelectorAll('.menu-option').forEach(btn => btn.classList.remove('text-blue-500', 'font-bold'));
+                // Find the menu-option that corresponds to the pageName
+                const activeButton = document.querySelector(`.menu-option[data-page="${pageName}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('text-blue-500', 'font-bold');
+                }
+            }
         }
     });
 </script>

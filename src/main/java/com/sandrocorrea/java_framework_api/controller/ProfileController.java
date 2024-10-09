@@ -28,11 +28,11 @@ public class ProfileController {
   public String saveProfile(@ModelAttribute Profile profile, Model model, BindingResult result) {
     if (result.hasErrors()) {
       model.addAttribute("message", "Please correct the errors in the form");
-      return "add-profile";  // Return to the form if there are validation errors
+      return "profile :: content";
     }
     profileService.saveProfile(profile);
     model.addAttribute("message", "Profile saved successfully!");
-    return "redirect:/view-profiles";
+    return "view-profiles";
   }
 
   @GetMapping("view-profiles")
