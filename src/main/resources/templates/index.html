@@ -22,7 +22,7 @@
                 class="menu-option text-gray-600 hover:text-blue-500" data-page="add-profile">
             Add Profile
         </button>
-        <button hx-get="/view-profiles" hx-target="#content" hx-swap="innerHTML"
+        <button hx-get="/profiles?page=1" hx-target="#content" hx-swap="innerHTML"
                 class="menu-option text-gray-600 hover:text-blue-500" data-page="view-profiles">
             View Profiles
         </button>
@@ -77,6 +77,20 @@
                 if (activeButton) {
                     activeButton.classList.add('text-blue-500', 'font-bold');
                 }
+            }
+
+            // Attach click events to table rows (for profile descriptions)
+            if (event.detail.target.querySelector('#profiles-table-body')) {
+                const rows = document.querySelectorAll('#profiles-table-body tr');
+                rows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        rows.forEach(r => r.classList.remove('bg-blue-100'));
+                        this.classList.add('bg-blue-100');
+                        const description = this.getAttribute('data-description');
+                        document.getElementById('description-content').textContent = description;
+                        document.getElementById('profile-description').classList.remove('hidden');
+                    });
+                });
             }
         }
     });
